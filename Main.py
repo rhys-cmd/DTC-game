@@ -55,10 +55,20 @@ class gameWindow(arcade.Window):
             self.player_sprite.change_x = self.player_sprite.speed
         if symbol == arcade.key.LEFT:
             self.player_sprite.change_x = -self.player_sprite.speed
-        if symbol == arcade.key.UP:
-             self.player_sprite.change_y = -self.player_sprite.speed
         if symbol == arcade.key.DOWN:
+             self.player_sprite.change_y = -self.player_sprite.speed
+        if symbol == arcade.key.UP:
              self.player_sprite.change_y = self.player_sprite.speed
+
+    def on_key_release(self, symbol, modifiers):
+        if symbol == arcade.key.RIGHT: 
+            self.player_sprite.change_x = 0
+        if symbol == arcade.key.LEFT: 
+            self.player_sprite.change_x = 0 
+        if symbol == arcade.key.UP: 
+            self.player_sprite.change_y = 0 
+        if symbol == arcade.key.DOWN: 
+            self.player_sprite.change_y = 0  
 
 
 
