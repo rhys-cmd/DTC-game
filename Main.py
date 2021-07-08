@@ -1,9 +1,13 @@
 import arcade
 
 
+GRAVITY = 1
+PLAYER_JUMP_SPEED = 200
 
-SCREEN_WIDTH = 600
-SCREEN_HEIGHT = 600
+
+
+SCREEN_WIDTH = 1920
+SCREEN_HEIGHT = 1080
 SCREEN_TITLE = "game"
 
 CHARACTER_SCALING = 1
@@ -38,6 +42,10 @@ class gameWindow(arcade.Window):
         self.player_sprite.left = False
         self.player_sprite.up = False
         self.player_sprite.down = False
+                # Create the 'physics engine'
+        self.physics_engine = arcade.PhysicsEnginePlatformer(self.player_sprite,
+                                                             self.wall_list,
+                                                             GRAVITY)
 
     def on_draw(self):
         arcade.start_render()
@@ -51,14 +59,15 @@ class gameWindow(arcade.Window):
 
 
     def on_key_press(self, symbol, modifiers):
-        if symbol == arcade.key.RIGHT:
-            self.player_sprite.change_x = self.player_sprite.speed
+        if symbol == arcade.key.UP: self.player_sprite.speed
+        if self.physics_engine.can_jump():
+                self.player_sprite.change_y = PLAYER_JUMP_SPEED
         if symbol == arcade.key.LEFT:
             self.player_sprite.change_x = -self.player_sprite.speed
         if symbol == arcade.key.DOWN:
              self.player_sprite.change_y = -self.player_sprite.speed
-        if symbol == arcade.key.UP:
-             self.player_sprite.change_y = self.player_sprite.speed
+        if symbol == arcade.key.RIGHT:
+             self.player_sprite.change_x = self.player_sprite.speed
 
     def on_key_release(self, symbol, modifiers):
         if symbol == arcade.key.RIGHT: 
@@ -69,6 +78,8 @@ class gameWindow(arcade.Window):
             self.player_sprite.change_y = 0 
         if symbol == arcade.key.DOWN: 
             self.player_sprite.change_y = 0  
+
+    
 
 
 
