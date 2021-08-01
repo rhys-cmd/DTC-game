@@ -10,7 +10,7 @@ SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1080
 SCREEN_TITLE = "game"
 
-CHARACTER_SCALING = 1
+CHARACTER_SCALING = 2
 TILE_SCALING = 0.5
 COIN_SCALING = 0.5
 
@@ -31,7 +31,7 @@ class gameWindow(arcade.Window):
         self.player_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList(use_spatial_hash=True)
         self.coin_list = arcade.SpriteList(use_spatial_hash=True)
-        image_source = "adventurer_kick.png"
+        image_source = "ghost-1.png.png"
         self.player_sprite = arcade.Sprite(image_source)
         self.player_sprite.center_x = SCREEN_WIDTH/2
         self.player_sprite.center_y = SCREEN_HEIGHT/2
