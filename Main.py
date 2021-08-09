@@ -10,7 +10,10 @@ SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1080
 SCREEN_TITLE = "game"
 
-CHARACTER_SCALING = 2
+CHARACTER_SCALING = 1
+
+
+
 TILE_SCALING = 0.5
 COIN_SCALING = 0.5
 
@@ -23,15 +26,19 @@ class gameWindow(arcade.Window):
         self.wall_list = None 
         self.player_list = None 
         self.player_sprite = None 
+        self.jump_sound = arcade.load_sound("BeepBox-Song.mp3")
 
-    
+        self.view_bottom = 0
+        self.view_left = 0
+
+
         
 
     def setup(self):
         self.player_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList(use_spatial_hash=True)
         self.coin_list = arcade.SpriteList(use_spatial_hash=True)
-        image_source = "ghost-1.png.png"
+        image_source = "ghost-1.png (1).png"
         self.player_sprite = arcade.Sprite(image_source)
         self.player_sprite.center_x = SCREEN_WIDTH/2
         self.player_sprite.center_y = SCREEN_HEIGHT/2
@@ -55,6 +62,7 @@ class gameWindow(arcade.Window):
         coordinate_list = [[512, 96],
                             [256, 96],
                             [768, 96]]
+        
         for coordinate in coordinate_list:
             # Add a crate on the ground
             wall = arcade.Sprite(":resources:images/tiles/boxCrate_double.png", TILE_SCALING)
@@ -64,7 +72,64 @@ class gameWindow(arcade.Window):
         self.physics_engine = arcade.PhysicsEnginePlatformer(self.player_sprite,
                                                              self.wall_list,
                                                              GRAVITY)
+    
+    self.physics_engine.update
+    
+    changed = False
 
+    #scroll left
+    left_boundary = self.view_left + SCREEN_WIDTH - LEFT_VIEWPORT_MARGIN
+    if self.player_sprite.right > right_boundary:
+        self.view_left -= left_boundary - right_boundary
+        changed = True
+
+    #scroll right
+    right_boundary = self.view_left + SCREEN_WIDTH - RIGHT_VIEWPORT_MARGIN
+    if self.player_sprite.right > right_boundary:
+        self.view_left -= left_boundary - right_boundary
+        changed = True
+
+    #scroll up
+    top_boundary = slef.view_bottom + SCREEN_HEIGHT - TOP_VIEWPORT_MARGIN
+    if self.player_sprite.top > top_boundary:
+        self.view_bottom += self.player_sprite.top - top - top_boundary
+        changed  = True
+
+
+    #scroll down
+    bottom_boundary = self.veiw_bottom + BOTTOM_VIEWPORT_MARGIN
+    if self.player_sprite.bottom < bottom_boundary:
+        self.veiw_bottom -= bottom_boundary - self.player_sprite.bottom
+        changed = True
+
+
+    if changed:
+        self.veiw_bottom = int(self.veiw_bottom)
+        self.veiw_left = int(self.veiw_left)
+    
+    
+    arcade.set_viewport(self.veiw_left,
+                    SCREEN_WIDTH + self.veiw_left,
+                    self.view_bottom,
+                    SCREEN_HEIGHT + self.veiw_bottom )
+
+    LEFT_VIEWPORT_MARGIN = 250
+    RIGHT_VIEWPORT_MARGIN = 250
+    BOTTOM_VIEWPORT_MARGIN = 250
+    TOP_VIEWPORT_MARGIN = 100
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     def on_draw(self):
         arcade.start_render()
         self.player_list.draw()
@@ -80,6 +145,7 @@ class gameWindow(arcade.Window):
         if symbol == arcade.key.UP:
             if self.physics_engine.can_jump(): 
                 self.player_sprite.change_y = PLAYER_JUMP_SPEED
+                arcade.play_sound(self.jump_sound)
         if symbol == arcade.key.LEFT:
             self.player_sprite.change_x = -self.player_sprite.speed
         if symbol == arcade.key.DOWN:
@@ -98,6 +164,7 @@ class gameWindow(arcade.Window):
             self.player_sprite.change_y = 0  
 
     
+
 
 
 
