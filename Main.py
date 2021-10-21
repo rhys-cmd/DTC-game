@@ -1,7 +1,7 @@
 import arcade
 
-GRAVITY = 0.5
-PLAYER_JUMP_SPEED = 6
+GRAVITY = 0.4
+PLAYER_JUMP_SPEED = 7
 
 
 
@@ -12,12 +12,12 @@ SCREEN_TITLE = "game"
 
 CHARACTER_SCALING = 1
 
-LEFT_VIEW_PORT_MARGIN = 300
-RIGHT_VIEW_PORT_MARGIN = 300
-BOTTOM_VIEW_PORT_MARGIN = 50
-TOP_VIEW_PORT_MARGIN = 100
+LEFT_VIEW_PORT_MARGIN = 400
+RIGHT_VIEW_PORT_MARGIN = 400
+BOTTOM_VIEW_PORT_MARGIN = 100
+TOP_VIEW_PORT_MARGIN = 200
 
-TILE_SCALING = 1
+TILE_SCALING = 1.5
 COIN_SCALING = 2
 
 PLAYER_START_Y = 100
@@ -42,6 +42,7 @@ class gameWindow(arcade.Window):
         self.level = 1
         
         self.tile_map = None
+        self.tile_map2 = None
 
     def setup(self, level):
         self.player_list = arcade.SpriteList()
@@ -70,6 +71,7 @@ class gameWindow(arcade.Window):
     
     
         map_name = "dtctilemap1.tmx"
+        
 
         my_map =  arcade.tilemap.read_tmx(map_name)
         self.wall_list = arcade.tilemap.process_layer(map_object=my_map,
