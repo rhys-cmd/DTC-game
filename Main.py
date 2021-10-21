@@ -1,13 +1,14 @@
 import arcade
 
-GRAVITY = 1
-PLAYER_JUMP_SPEED = 10
+GRAVITY = 0.5
+PLAYER_JUMP_SPEED = 6
 
 
 
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 650
 SCREEN_TITLE = "game"
+
 
 CHARACTER_SCALING = 1
 
@@ -17,7 +18,10 @@ BOTTOM_VIEW_PORT_MARGIN = 50
 TOP_VIEW_PORT_MARGIN = 100
 
 TILE_SCALING = 1
-COIN_SCALING = 0.5
+COIN_SCALING = 2
+
+PLAYER_START_Y = 100
+PLAYER_START_X = 100
 
 class gameWindow(arcade.Window):
     def __init__(self):
@@ -29,6 +33,7 @@ class gameWindow(arcade.Window):
         self.player_list = None 
         self.player_sprite = None 
         self.jump_sound = arcade.load_sound("BeepBox-Song.mp3")
+        self.dont_touch_layer = None
 
         self.view_bottom = 0
         self.view_left = 0
@@ -42,11 +47,11 @@ class gameWindow(arcade.Window):
         self.coin_list = arcade.SpriteList(use_spatial_hash=True)
         image_source = "ghost-1.png (1).png"
         self.player_sprite = arcade.Sprite(image_source)
-        self.player_sprite.center_x = SCREEN_WIDTH/2
-        self.player_sprite.center_y = SCREEN_HEIGHT/2
+        self.player_sprite.center_x = PLAYER_START_X
+        self.player_sprite.center_y = PLAYER_START_Y
         self.player_list.append(self.player_sprite)
 
-        self.player_sprite.speed = 5
+        self.player_sprite.speed = 3
         self.player_sprite.right = False
         self.player_sprite.left = False
         self.player_sprite.up = False
@@ -54,8 +59,12 @@ class gameWindow(arcade.Window):
  
         
         
-        map_name = "dtctilemap1.tmx"
+        
         platform_layer_name = "Tile Layer 1"
+        dont_touch_layer = "Tile Layer 2"
+    
+    
+        map_name = "dtctilemap1.tmx"
 
         my_map =  arcade.tilemap.read_tmx(map_name)
         self.wall_list = arcade.tilemap.process_layer(map_object=my_map,
@@ -63,7 +72,11 @@ class gameWindow(arcade.Window):
                                                       scaling=TILE_SCALING,
                                                       use_spatial_hash=True)
         
-        
+        my_map =  arcade.tilemap.read_tmx(map_name)
+        self.dont_touch_list = arcade.tilemap.process_layer(map_object=my_map,
+                                                      layer_name=dont_touch_layer,
+                                                      scaling=TILE_SCALING,
+                                                      use_spatial_hash=True)
     
 
         
@@ -97,6 +110,27 @@ class gameWindow(arcade.Window):
         self.physics_engine.update()
 
         changed = False
+
+        if self.player_sprite.center_y < -500:
+            self.player_sprite.center_x = PLAYER_START_X
+            self.player_sprite.center_y = PLAYER_START_Y
+
+            self.view_bottom = 0
+            self.view_left = 0
+            changed = True
+
+
+
+
+        if arcade.check_for_collision_with_list(self.player_sprite,
+                                            self.dont_touch_list):
+            self.player_sprite.center_y = PLAYER_START_Y
+            self.player_sprite.center_x = PLAYER_START_X
+            self.view_bottom = 0
+            self.view_left = 0
+            changed = True
+
+
 
         left_boundary = self.view_left + LEFT_VIEW_PORT_MARGIN
         if self.player_sprite.left < left_boundary:
