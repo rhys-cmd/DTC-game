@@ -12,8 +12,8 @@ SCREEN_TITLE = "game"
 
 CHARACTER_SCALING = 1
 
-LEFT_VIEW_PORT_MARGIN = 250
-RIGHT_VIEW_PORT_MARGIN = 250
+LEFT_VIEW_PORT_MARGIN = 300
+RIGHT_VIEW_PORT_MARGIN = 300
 BOTTOM_VIEW_PORT_MARGIN = 50
 TOP_VIEW_PORT_MARGIN = 100
 
@@ -34,14 +34,16 @@ class gameWindow(arcade.Window):
         self.player_sprite = None 
         self.jump_sound = arcade.load_sound("BeepBox-Song.mp3")
         self.dont_touch_layer = None
+        self.touch_to_win_list = None
 
         self.view_bottom = 0
         self.view_left = 0
 
-
+        self.level = 1
+        
         self.tile_map = None
 
-    def setup(self):
+    def setup(self, level):
         self.player_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList(use_spatial_hash=True)
         self.coin_list = arcade.SpriteList(use_spatial_hash=True)
@@ -56,12 +58,15 @@ class gameWindow(arcade.Window):
         self.player_sprite.left = False
         self.player_sprite.up = False
         self.player_sprite.down = False
+
+        
  
         
         
         
         platform_layer_name = "Tile Layer 1"
         dont_touch_layer = "Tile Layer 2"
+        touch_to_win_layer = "Tile Layer 3"
     
     
         map_name = "dtctilemap1.tmx"
@@ -77,8 +82,13 @@ class gameWindow(arcade.Window):
                                                       layer_name=dont_touch_layer,
                                                       scaling=TILE_SCALING,
                                                       use_spatial_hash=True)
-    
 
+        my_map = arcade.tilemap.read_tmx(map_name)
+        self.touch_to_win_list = arcade.tilemap.process_layer(map_object=my_map,
+                                                      layer_name=touch_to_win_layer,
+                                                      scaling=TILE_SCALING,
+                                                      use_spatial_hash=True)
+    
         
         self.physics_engine = arcade.PhysicsEnginePlatformer(self.player_sprite,
                                                              self.wall_list,
@@ -103,6 +113,8 @@ class gameWindow(arcade.Window):
         self.player_list.draw()
         self.wall_list.draw()
         self.player_list.draw()
+        self.touch_to_win_list.draw()
+        self.dont_touch_list.draw()
     
     
     def on_update(self, delta_time):
@@ -131,6 +143,14 @@ class gameWindow(arcade.Window):
             changed = True
 
 
+        if arcade.check_for_collision_with_list(self.player_sprite,
+                                                self.touch_to_win_list):
+            self.level += 1
+            self.setup(self.level)                    
+            
+            self.view_bottom = 0
+            self.view_left = 0
+            changed = True
 
         left_boundary = self.view_left + LEFT_VIEW_PORT_MARGIN
         if self.player_sprite.left < left_boundary:
@@ -193,7 +213,7 @@ class gameWindow(arcade.Window):
 
 def main():
     window = gameWindow()
-    window.setup()
+    window.setup(window.level)
     arcade.run()
 
 main()
