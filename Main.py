@@ -1,5 +1,6 @@
 import arcade
 
+
 GRAVITY = 0.4
 PLAYER_JUMP_SPEED = 7
 
@@ -23,11 +24,17 @@ COIN_SCALING = 2
 PLAYER_START_Y = 100
 PLAYER_START_X = 100
 
+
+
+
+
+
 class gameWindow(arcade.Window):
     def __init__(self):
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
         arcade.set_background_color(arcade.csscolor.AQUA)
-
+        
+        
         self.coin_list = None 
         self.wall_list = None 
         self.player_list = None 
@@ -35,14 +42,16 @@ class gameWindow(arcade.Window):
         self.jump_sound = arcade.load_sound("BeepBox-Song.mp3")
         self.dont_touch_layer = None
         self.touch_to_win_list = None
-
+        
+        
         self.view_bottom = 0
         self.view_left = 0
-
+        
+        self.score = 3
         self.level = 1
         
         self.tile_map = None
-        self.tile_map2 = None
+        
 
     def setup(self, level):
         self.player_list = arcade.SpriteList()
@@ -53,24 +62,29 @@ class gameWindow(arcade.Window):
         self.player_sprite.center_x = PLAYER_START_X
         self.player_sprite.center_y = PLAYER_START_Y
         self.player_list.append(self.player_sprite)
+        self.camera = arcade.Camera(self.SCREEN_WIDTH, self.SCREEN_HEIGHT)
+        self.gui_camera = arcade.Camera(self.SCREEN_WIDTH, self.SCREEN_HEIGHT)
+
+       
 
         self.player_sprite.speed = 3
         self.player_sprite.right = False
         self.player_sprite.left = False
         self.player_sprite.up = False
         self.player_sprite.down = False
+        
+        
 
-        
- 
-        
-        
-        
+        self.score = 3
+
         platform_layer_name = "Tile Layer 1"
         dont_touch_layer = "Tile Layer 2"
         touch_to_win_layer = "Tile Layer 3"
     
     
-        map_name = "dtctilemap1.tmx"
+        map_name = f"dtctilemap_{level}.tmx"
+
+        
         
 
         my_map =  arcade.tilemap.read_tmx(map_name)
@@ -90,6 +104,9 @@ class gameWindow(arcade.Window):
                                                       layer_name=touch_to_win_layer,
                                                       scaling=TILE_SCALING,
                                                       use_spatial_hash=True)
+
+
+        
     
         
         self.physics_engine = arcade.PhysicsEnginePlatformer(self.player_sprite,
@@ -117,20 +134,45 @@ class gameWindow(arcade.Window):
         self.player_list.draw()
         self.touch_to_win_list.draw()
         self.dont_touch_list.draw()
+        
+        control_text = f"use arrow keys to move"
+        arcade.draw_text(control_text,
+                10,
+                10,
+                arcade.csscolor.WHITE,
+                18)
+        
+        
+
+           
+        score_text = f"Score: {self.score}"
+        arcade.draw_text(
+                score_text,
+                10,
+                10,
+                arcade.csscolor.WHITE,
+                18,
+        )
     
     
     def on_update(self, delta_time):
         self.player_sprite.update()
         self.physics_engine.update()
-
+        
         changed = False
+
+
+        
+            
 
         if self.player_sprite.center_y < -500:
             self.player_sprite.center_x = PLAYER_START_X
             self.player_sprite.center_y = PLAYER_START_Y
+            self.score - 1
 
             self.view_bottom = 0
             self.view_left = 0
+            self.score -= 1
             changed = True
 
 
@@ -142,6 +184,7 @@ class gameWindow(arcade.Window):
             self.player_sprite.center_x = PLAYER_START_X
             self.view_bottom = 0
             self.view_left = 0
+            self.score -= 1
             changed = True
 
 
@@ -201,8 +244,6 @@ class gameWindow(arcade.Window):
             self.player_sprite.change_x = 0
         if symbol == arcade.key.LEFT: 
             self.player_sprite.change_x = 0 
-        if symbol == arcade.key.UP: 
-            self.player_sprite.change_y = 0 
         if symbol == arcade.key.DOWN: 
             self.player_sprite.change_y = 0  
 
